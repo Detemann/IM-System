@@ -1,13 +1,15 @@
 package com.sarrus.api_files.service;
 
 import com.sarrus.api_files.dto.FileDTO;
+import com.sarrus.api_files.exceptions.RetrieveException;
 import com.sarrus.api_files.misc.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 
@@ -38,12 +40,12 @@ public class FileService {
                     .uri("/test")
                     .bodyValue(bodyMap)
                     .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RetrieveException(clientResponse.statusCode(), "Upload to file server failed")))
+                    .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RetrieveException(clientResponse.statusCode(), "Upload to file server failed")))
                     .bodyToMono(String.class)
                     .block();
-        } catch (WebClientResponseException | IOException e) {
-            e.printStackTrace();
-            return e.getMessage();
+        } catch (IOException ex) {
+            throw new RetrieveException(HttpStatusCode.valueOf(500), ex.getMessage());
         }
-
     }
 }
