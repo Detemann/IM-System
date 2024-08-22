@@ -12,7 +12,7 @@ public class WebConfig {
     @Bean
     public WebClient webClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:8080/api-files").defaultCookie("cookieKey", "cookieValue")
+                .baseUrl("http://localhost:8086").defaultCookie("cookieKey", "cookieValue")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA_VALUE)
                 .build();
     }

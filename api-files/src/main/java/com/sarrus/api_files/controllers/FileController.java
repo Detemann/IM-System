@@ -17,7 +17,13 @@ public class FileController {
 
     @PostMapping
     public ResponseEntity<String> uploadFile(@Valid FileDTO data) {
-
-        return ResponseEntity.ok().build();
+        String res = "";
+        try {
+            res = fileService.send(data);
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
