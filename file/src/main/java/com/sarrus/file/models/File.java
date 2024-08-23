@@ -2,10 +2,12 @@ package com.sarrus.file.models;
 
 import com.sarrus.file.dtos.FileDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.flywaydb.core.internal.util.ClassUtils;
+import org.springframework.data.jpa.repository.Temporal;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.Path;
 
 @Table(name = "files")
 @Entity
@@ -16,7 +18,7 @@ import lombok.Setter;
 public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String name;
     private String filePath;
     private String fileType;
@@ -24,9 +26,14 @@ public class File {
     private User user;
     @ManyToOne
     private Playlist playlist;
+    @Transient
+    private MultipartFile multipartFile;
 
-    public File(FileDTO fileDTO) {
-        this.name = fileDTO.file().getName();
+    public File(FileDTO fileDTO, Path filePath) {
+        this.name = fileDTO.file().getOriginalFilename();
         this.fileType = fileDTO.file().getOriginalFilename().substring(fileDTO.file().getOriginalFilename().lastIndexOf("."));
+        this.multipartFile = fileDTO.file();
+        //Todos os arquivos terão o caminho no seu formado .zip porque apenas arquivos zipados serão salvos
+        this.filePath = filePath.resolve(fileDTO.file().getOriginalFilename()).toString().replaceAll("\\.(png|jpg|mp4)", ".zip");
     }
 }
