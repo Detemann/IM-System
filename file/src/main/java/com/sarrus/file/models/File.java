@@ -1,5 +1,6 @@
 package com.sarrus.file.models;
 
+import com.sarrus.file.dtos.FileDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +24,9 @@ public class File {
     private User user;
     @ManyToOne
     private Playlist playlist;
+
+    public File(FileDTO fileDTO) {
+        this.name = fileDTO.file().getName();
+        this.fileType = fileDTO.file().getOriginalFilename().substring(fileDTO.file().getOriginalFilename().lastIndexOf("."));
+    }
 }
