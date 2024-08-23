@@ -1,7 +1,7 @@
 package com.sarrus.file.controllers;
 
 import com.sarrus.file.dtos.FileDTO;
-import com.sarrus.file.services.FileService;
+import com.sarrus.file.services.file.FileService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
