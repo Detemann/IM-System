@@ -1,4 +1,4 @@
-package com.sarrus.file.controllers;
+package com.sarrus.file.services.playlist.controllers;
 
 import com.sarrus.file.dtos.FileDTO;
 import com.sarrus.file.services.file.FileModelService;
