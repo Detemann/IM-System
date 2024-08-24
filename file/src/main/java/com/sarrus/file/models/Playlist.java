@@ -15,7 +15,7 @@ import lombok.Setter;
 public class Playlist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String name;
     @ManyToOne
     private User userId;
