@@ -2,16 +2,15 @@ package com.sarrus.file.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.HttpStatusCode;
 
 @Getter
 @Setter
 public class ErrorDTO {
-    private int status;
     private String message;
+    private String value;
 
-    public ErrorDTO(HttpStatusCode status, String message) {
-        this.status = status.value();
+    public ErrorDTO(String message, String details) {
         this.message = message;
+        this.value = details;
     }
 }
