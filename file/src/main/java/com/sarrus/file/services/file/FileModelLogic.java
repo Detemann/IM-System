@@ -27,14 +27,20 @@ public class FileModelLogic {
     private PlaylistRepository playlistRepository;
 
     public void zipAndStoreFile(FileModel fileModel) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(fileModel.getFilePath());
-        ZipOutputStream zipOutputStream  = new ZipOutputStream(fileOutputStream);
-        ZipEntry zipEntry = new ZipEntry(fileModel.getName());
+        ZipOutputStream zipOutputStream;
 
-        zipOutputStream.putNextEntry(zipEntry);
-        zipOutputStream.write(fileModel.getMultipartFile().getBytes());
-        zipOutputStream.closeEntry();
-        zipOutputStream.close();
+        try (FileOutputStream fileOutputStream = new FileOutputStream(fileModel.getFilePath())) {
+            zipOutputStream = new ZipOutputStream(fileOutputStream);
+
+            ZipEntry zipEntry = new ZipEntry(fileModel.getName());
+
+            zipOutputStream.putNextEntry(zipEntry);
+            zipOutputStream.write(fileModel.getMultipartFile().getBytes());
+            zipOutputStream.closeEntry();
+            zipOutputStream.close();
+        } catch (IOException e) {
+            throw new IOException("[FIleModelLogic -> zipAndStoreFile] Internal Server Error");
+        }
     }
 
     public FileModel populateFileModel(FileDTO fileDTO, int userId, int playlistId) {

@@ -23,4 +23,10 @@ public class FileController {
     public String uploadFile(@Valid FileDTO data) {
         return fileService.send(data);
     }
+
+    @GetMapping
+    public String uploadFile223(@Valid FileDTO data) {
+        return fileService.send(data);
+    }
+
 }
