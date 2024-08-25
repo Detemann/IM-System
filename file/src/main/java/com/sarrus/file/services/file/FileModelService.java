@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 @Service
 public class FileModelService {
@@ -41,6 +42,10 @@ public class FileModelService {
         }
         playlistService.save(fileModel.getPlaylist());
         this.save(fileModel);
+    }
+
+    public Map<String, byte[]> unzipFiles(Integer userId, Integer fileId) throws IOException {
+        return fileModelLogic.unzipFiles(userId, fileId);
     }
 
     private void save(FileModel fileModel) {

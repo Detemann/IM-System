@@ -1,15 +1,14 @@
-package com.sarrus.file.services.playlist.controllers;
+package com.sarrus.file.controllers;
 
 import com.sarrus.file.dtos.FileDTO;
 import com.sarrus.file.services.file.FileModelService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/test")
@@ -22,5 +21,16 @@ public class FileController {
     public ResponseEntity<Object> test(@Valid FileDTO fileDTO) throws IOException {
         fileModelService.saveAndStore(fileDTO);
         return ResponseEntity.ok().body("Arquivo recebido com sucesso");
+    }
+
+
+    @GetMapping("/{userId}&{fileId}")
+    public ResponseEntity<Object> unzipAndSendFiles(@PathVariable Integer userId, @PathVariable Integer fileId) {
+        try {
+            Map<String, byte[]> unzippedFiles = fileModelService.unzipFiles(userId, fileId);
+            return ResponseEntity.ok().body(unzippedFiles);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body(null);
+        }
     }
 }

@@ -13,16 +13,4 @@ import java.util.Map;
 @CrossOrigin("*")
 public class CommandController {
 
-    @Autowired
-    private FileModelLogic fileModelLogic;
-
-    @GetMapping("/unzipAndSendFiles")
-    public ResponseEntity<Map<String, byte[]>> unzipAndSendFiles(@RequestParam Integer userId, @RequestParam Integer fileId) {
-        try {
-            Map<String, byte[]> unzippedFiles = fileModelLogic.unzipFiles(userId, fileId);
-            return ResponseEntity.ok(unzippedFiles);
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body(null);
-        }
-    }
 }
