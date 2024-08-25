@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -52,14 +53,14 @@ public class FileModelLogic {
         }
     }
 
-    public FileModel populateFileModel(FileDTO fileDTO, int userId, int playlistId) {
+    public FileModel populateFileModel(MultipartFile file, int userId, int playlistId) {
         Optional<User> user = Optional.ofNullable(userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException(userId, "User not found!")));
 
         Optional<Playlist> playlist = Optional.of(playlistRepository.findByUserIdAndId(userId, playlistId)
                 .orElse(new Playlist()));
 
-        FileModel fileModel = new FileModel(fileDTO);
+        FileModel fileModel = new FileModel(file);
         fileModel.setUser(user.get());
         fileModel.setPlaylist(playlist.get());
 

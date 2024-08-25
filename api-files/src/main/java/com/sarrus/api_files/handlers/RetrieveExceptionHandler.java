@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.net.ConnectException;
+
 @ControllerAdvice
 public class RetrieveExceptionHandler {
 
@@ -17,6 +19,16 @@ public class RetrieveExceptionHandler {
     public ErrorDTO handleRetrieveException(RetrieveException ex) {
         return new ErrorDTO(
                 ex.getStatus(),
+                ex.getMessage()
+        );
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    @ExceptionHandler(ConnectException.class)
+    public ErrorDTO handleConnectException(ConnectException ex) {
+        return new ErrorDTO(
+                HttpStatus.SERVICE_UNAVAILABLE,
                 ex.getMessage()
         );
     }

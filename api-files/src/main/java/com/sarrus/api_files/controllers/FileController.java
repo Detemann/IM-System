@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 
 @RestController
 @RequestMapping("/api")
@@ -17,7 +19,7 @@ public class FileController {
     FileService fileService;
 
     @PostMapping
-    public ResponseEntity<Object> uploadFile(@Valid FileDTO fileDTO) {
+    public ResponseEntity<Object> uploadFile(@Valid FileDTO fileDTO) throws IOException {
         fileService.send(fileDTO);
         return ResponseEntity.ok().body("Arquivo Enviado com sucesso!");
     }

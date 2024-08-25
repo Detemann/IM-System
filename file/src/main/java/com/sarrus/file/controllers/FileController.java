@@ -4,6 +4,7 @@ import com.sarrus.file.dtos.FileDTO;
 import com.sarrus.file.services.file.FileModelService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class FileController {
     @PostMapping
     public ResponseEntity<Object> test(@Valid FileDTO fileDTO) throws IOException {
         fileModelService.saveAndStore(fileDTO);
-        return ResponseEntity.ok().body("Arquivo recebido com sucesso");
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 
