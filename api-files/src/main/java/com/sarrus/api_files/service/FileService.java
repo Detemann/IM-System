@@ -3,7 +3,6 @@ package com.sarrus.api_files.service;
 import com.sarrus.api_files.dto.FileDTO;
 import com.sarrus.api_files.exceptions.RetrieveException;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -44,7 +43,7 @@ public class FileService {
             bodyMap.add("files", content);
         }
 
-        ResponseEntity response = webClient.post()
+        return webClient.post()
                 .uri("/test")
                 .body(BodyInserters.fromMultipartData(bodyMap))
                 .retrieve()
@@ -52,6 +51,5 @@ public class FileService {
                 .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RetrieveException(clientResponse.statusCode(), "Upload to file server returned error")))
                 .toEntity(ResponseEntity.class)
                 .block();
-        return response;
     }
 }
