@@ -24,7 +24,11 @@ public class FileController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-
+/*
+* Todo
+*  Eliminar esse endpoint e fazer um novo onde seja retornado todos os arquivos de uma playlist
+*  Obs.: VÁ PARA O CONTROLLER DO api-files para mais instruções
+* */
     @GetMapping("/{userId}&{fileId}")
     public ResponseEntity<Object> unzipAndSendFiles(@PathVariable Integer userId, @PathVariable Integer fileId) {
         try {

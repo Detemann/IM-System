@@ -23,4 +23,10 @@ public class FileController {
         fileService.send(fileDTO);
         return ResponseEntity.ok().body("Arquivo Enviado com sucesso!");
     }
+
+    /*
+    * Todo
+    *  Fazer endpoint GET que faça a requisição do endpoint do file GET que pegue todos os arquivos vinculados a uma playlist -
+    *  esse deve passar o id do usuário e id da playlist
+    * */
 }
