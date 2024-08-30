@@ -1,19 +1,16 @@
 package com.sarrus.api_files.service;
 
 import com.sarrus.api_files.dto.FileDTO;
-import com.sarrus.api_files.exceptions.RetrieveException;
-import com.sarrus.api_files.misc.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-
+import java.util.Arrays;
 
 @Service
 public class FileService {
@@ -27,25 +24,26 @@ public class FileService {
 *
 * Mudar uri quando o controller especifico de file por criado
 * */
-    public void send(FileDTO fileDTO) {
-        try {
-            Resource file = new ByteArrayResource(fileDTO.file().getBytes(), fileDTO.file().getOriginalFilename());
+    public ResponseEntity send(FileDTO fileDTO) throws IOException {
 
-            MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
-            bodyMap.add("user", fileDTO.user());
-            bodyMap.add("playlist", fileDTO.playlist());
-            bodyMap.add("time", fileDTO.time());
-            bodyMap.add("file", file);
+        MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
+        bodyMap.add("user", fileDTO.user());
+        bodyMap.add("playlist", fileDTO.playlist());
+        bodyMap.add("time", fileDTO.time());
+        Arrays.stream(fileDTO.files()).forEach(file -> {
+            try {
+                bodyMap.add("file", new ByteArrayResource(file.getBytes()));
+            } catch (IOException e) {
+                System.out.println("[FileService -> send] "+e.getMessage());
+                throw new RuntimeException(e);
+            }
+        });
 
-            webClient.post()
-                    .uri("/test")
-                    .bodyValue(bodyMap)
-                    .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new RetrieveException(clientResponse.statusCode(), "Upload to file server failed")))
-                    .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RetrieveException(clientResponse.statusCode(), "Upload to file server failed")))
-                    .toEntity(Void.class);
-        } catch (IOException ex) {
-            throw new RetrieveException(HttpStatusCode.valueOf(500), ex.getMessage());
-        }
+        return webClient.post()
+                .uri("/test")
+                .body(BodyInserters.fromMultipartData(bodyMap))
+                .retrieve()
+                .toEntity(ResponseEntity.class)
+                .block();
     }
 }

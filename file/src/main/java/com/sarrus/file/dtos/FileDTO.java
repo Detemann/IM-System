@@ -9,5 +9,5 @@ public record FileDTO(
         Integer playlist,
         @NotNull
         Integer time,
-        MultipartFile file) {
+        MultipartFile[] files) {
 }

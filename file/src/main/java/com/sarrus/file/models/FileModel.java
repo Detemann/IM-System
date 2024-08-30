@@ -1,8 +1,10 @@
 package com.sarrus.file.models;
 
-import com.sarrus.file.dtos.FileDTO;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
@@ -27,17 +29,17 @@ public class FileModel {
     @Transient
     private MultipartFile multipartFile;
 
-    public FileModel(FileDTO fileDTO, Path filePath) {
-        this.name = fileDTO.file().getOriginalFilename();
-        this.fileType = fileDTO.file().getOriginalFilename().substring(fileDTO.file().getOriginalFilename().lastIndexOf("."));
-        this.multipartFile = fileDTO.file();
+    public FileModel(MultipartFile file, Path filePath) {
+        this.name = file.getOriginalFilename();
+        this.fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+        this.multipartFile = file;
         //Todos os arquivos terão o caminho no seu formado .zip porque apenas arquivos zipados serão salvos
-        this.filePath = filePath.resolve(fileDTO.file().getOriginalFilename()).toString().replaceAll("\\.(png|jpg|mp4)", ".zip");
+        this.filePath = filePath.resolve(file.getOriginalFilename()).toString().replaceAll("\\.(png|jpg|mp4)", ".zip");
     }
 
-    public FileModel(FileDTO fileDTO) {
-        this.name = fileDTO.file().getOriginalFilename();
-        this.fileType = fileDTO.file().getOriginalFilename().substring(fileDTO.file().getOriginalFilename().lastIndexOf("."));
-        this.multipartFile = fileDTO.file();
+    public FileModel(MultipartFile file) {
+        this.name = file.getOriginalFilename();
+        this.fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+        this.multipartFile = file;
     }
 }

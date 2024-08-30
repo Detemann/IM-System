@@ -10,5 +10,5 @@ public record FileDTO(
         @NotNull
         Integer time,
         @NotNull//In seconds
-        MultipartFile file) {
+        MultipartFile[] files) {
 }
