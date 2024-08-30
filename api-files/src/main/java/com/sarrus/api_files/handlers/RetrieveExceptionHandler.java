@@ -14,7 +14,7 @@ import java.net.ConnectException;
 public class RetrieveExceptionHandler {
 
     @ResponseBody
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
     @ExceptionHandler(RetrieveException.class)
     public ErrorDTO handleRetrieveException(RetrieveException ex) {
         return new ErrorDTO(
@@ -28,7 +28,7 @@ public class RetrieveExceptionHandler {
     @ExceptionHandler(ConnectException.class)
     public ErrorDTO handleConnectException(ConnectException ex) {
         return new ErrorDTO(
-                HttpStatus.SERVICE_UNAVAILABLE,
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
                 ex.getMessage()
         );
     }

@@ -7,10 +7,10 @@ import org.springframework.http.HttpStatusCode;
 @Getter
 @NoArgsConstructor
 public class RetrieveException extends RuntimeException {
-    private HttpStatusCode status;
+    private int status;
 
-    public RetrieveException(HttpStatusCode status,String message) {
+    public RetrieveException(HttpStatusCode status, String message) {
         super(message);
-        this.status = status;
+        this.status = status.value();
     }
 }

@@ -1,12 +1,11 @@
 package com.sarrus.file.services.file;
 
-import com.sarrus.file.dtos.FileDTO;
 import com.sarrus.file.exceptions.DataNotFoundException;
 import com.sarrus.file.models.FileModel;
 import com.sarrus.file.models.Playlist;
 import com.sarrus.file.models.User;
-import com.sarrus.file.repositories.PlaylistRepository;
 import com.sarrus.file.repositories.FileRepository;
+import com.sarrus.file.repositories.PlaylistRepository;
 import com.sarrus.file.repositories.UserRepository;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

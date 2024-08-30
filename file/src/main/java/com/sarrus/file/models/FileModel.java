@@ -1,8 +1,10 @@
 package com.sarrus.file.models;
 
-import com.sarrus.file.dtos.FileDTO;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
