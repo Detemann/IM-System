@@ -1,5 +1,6 @@
 package com.sarrus.file.services.file;
 
+import com.sarrus.file.enums.ContentTypes;
 import com.sarrus.file.exceptions.DataNotFoundException;
 import com.sarrus.file.models.FileModel;
 import com.sarrus.file.models.Playlist;
@@ -9,16 +10,17 @@ import com.sarrus.file.repositories.PlaylistRepository;
 import com.sarrus.file.repositories.UserRepository;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.util.List;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -66,25 +68,23 @@ public class FileModelLogic {
         return fileModel;
     }
 
-    public Map<String, byte[]> unzipFiles(Integer userId, Integer fileId) throws IOException {
-        Optional<FileModel> zipFilePath = Optional.ofNullable(fileRepository.findById(fileId).orElseThrow(() -> new DataNotFoundException(fileId, "Path not found")));
+    public MultiValueMap<String, HttpEntity<?>> unzipFiles(Integer userId, Integer playlistId) {
+        List<Optional<FileModel>> zipFile = fileRepository.findByPlaylistAndUser(playlistId, userId);
 
-        Map<String, byte[]> unzippedFiles = new HashMap<>();
+        MultipartBodyBuilder multipartBuilder = new MultipartBodyBuilder();
 
-        try (FileInputStream fileInputStream = new FileInputStream(zipFilePath.get().getFilePath());
-             ZipInputStream zipInputStream = new ZipInputStream(fileInputStream)) {
-
-            ZipEntry zipEntry;
-            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                StreamUtils.copy(zipInputStream, outputStream);
-                unzippedFiles.put(zipEntry.getName(), outputStream.toByteArray());
-                zipInputStream.closeEntry();
+        zipFile.forEach(file -> {
+            try (FileInputStream fileInputStream = new FileInputStream(file.get().getFilePath())) {
+                byte[] bytes = new ZipInputStream(fileInputStream).readAllBytes();
+                multipartBuilder.part(file.get().getName(), new ByteArrayResource(bytes))
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "inline; filename=\"" + UriUtils.encodePath(file.get().getName(), "UTF-8") + "\"")
+                        .header(HttpHeaders.CONTENT_TYPE, ContentTypes.getByValue(file.get().getFileType()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            throw new IOException("[FileModelLogic -> unzipFiles] Internal Server Error", e);
-        }
+        });
 
-        return unzippedFiles;
+        return multipartBuilder.build();
     }
 }

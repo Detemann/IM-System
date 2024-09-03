@@ -5,13 +5,14 @@ import com.sarrus.file.dtos.FileDTO;
 import com.sarrus.file.models.FileModel;
 import com.sarrus.file.repositories.FileRepository;
 import com.sarrus.file.services.playlist.PlaylistService;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 
 @Service
 public class FileModelService {
@@ -30,7 +31,6 @@ public class FileModelService {
     }
 
     public void saveAndStore(FileDTO fileDTO) throws IOException {
-        System.out.println(fileDTO);
         for(MultipartFile file: fileDTO.files()) {
             FileModel fileModel = fileModelLogic.populateFileModel(file, fileDTO.user(), fileDTO.playlist());
             fileModel.setFilePath(fileStorageLocation.resolve(file.getOriginalFilename())
@@ -48,7 +48,7 @@ public class FileModelService {
         }
     }
 
-    public Map<String, byte[]> unzipFiles(Integer userId, Integer fileId) throws IOException {
+    public MultiValueMap<String, HttpEntity<?>> unzipFiles(Integer userId, Integer fileId) {
         return fileModelLogic.unzipFiles(userId, fileId);
     }
 

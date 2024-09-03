@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Path;
 
 @Table(name = "files")
-@Entity(name = "file")
+@Entity(name = "files")
 @Getter
 @Setter
 @AllArgsConstructor
