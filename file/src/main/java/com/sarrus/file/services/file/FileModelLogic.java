@@ -1,6 +1,7 @@
 package com.sarrus.file.services.file;
 
-import com.sarrus.file.enums.ContentTypes;
+import com.sarrus.file.dtos.RequestFileDTO;
+import com.sarrus.file.dtos.ResponseFileDTO;
 import com.sarrus.file.exceptions.DataNotFoundException;
 import com.sarrus.file.models.FileModel;
 import com.sarrus.file.models.Playlist;
@@ -10,16 +11,13 @@ import com.sarrus.file.repositories.PlaylistRepository;
 import com.sarrus.file.repositories.UserRepository;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriUtils;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
@@ -54,37 +52,40 @@ public class FileModelLogic {
         }
     }
 
-    public FileModel populateFileModel(MultipartFile file, int userId, int playlistId) {
-        Optional<User> user = Optional.ofNullable(userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException(userId, "User not found!")));
+    public List<FileModel> populateFileModel(RequestFileDTO requestFileDTO) {
+        Optional<User> user = Optional.ofNullable(userRepository.findById(requestFileDTO.user())
+                .orElseThrow(() -> new DataNotFoundException(requestFileDTO.user(), "User not found!")));
 
-        Optional<Playlist> playlist = Optional.of(playlistRepository.findByUserIdAndId(userId, playlistId)
+        Optional<Playlist> playlist = Optional.of(playlistRepository.findByUserIdAndId(requestFileDTO.user(), requestFileDTO.playlist())
                 .orElse(new Playlist()));
 
-        FileModel fileModel = new FileModel(file);
-        fileModel.setUser(user.get());
-        fileModel.setPlaylist(playlist.get());
+        List<FileModel> fileModels = new ArrayList<>();
+        Arrays.stream(requestFileDTO.files()).forEach(file -> {
+            fileModels.add(new FileModel(file, requestFileDTO.time(), user.get(), playlist.get()));
+        });
 
-        return fileModel;
+        return fileModels;
     }
 
-    public MultiValueMap<String, HttpEntity<?>> unzipFiles(Integer userId, Integer playlistId) {
-        List<Optional<FileModel>> zipFile = fileRepository.findByPlaylistAndUser(playlistId, userId);
+    public List<ResponseFileDTO> unzipAndPrepResponse(Integer userId, Integer playlistId) {
+        List<FileModel> files = fileRepository.findByPlaylistAndUser(playlistId, userId);
+        if (files.isEmpty()) {
+            throw new DataNotFoundException(userId, "File not found!");
+        }
 
-        MultipartBodyBuilder multipartBuilder = new MultipartBodyBuilder();
+        List<ResponseFileDTO> responseFileDTOS = new ArrayList<>();
+        files.forEach(file -> {
+            try {
+                FileInputStream zipFile = new FileInputStream(file.getFilePath());
+                ZipInputStream zip = new ZipInputStream(zipFile);
+                zip.getNextEntry();
 
-        zipFile.forEach(file -> {
-            try (FileInputStream fileInputStream = new FileInputStream(file.get().getFilePath())) {
-                byte[] bytes = new ZipInputStream(fileInputStream).readAllBytes();
-                multipartBuilder.part(file.get().getName(), new ByteArrayResource(bytes))
-                        .header(HttpHeaders.CONTENT_DISPOSITION,
-                                "inline; filename=\"" + UriUtils.encodePath(file.get().getName(), "UTF-8") + "\"")
-                        .header(HttpHeaders.CONTENT_TYPE, ContentTypes.getByValue(file.get().getFileType()));
+                responseFileDTOS.add(new ResponseFileDTO(file.getId(), file.getName(),file.getPlaylist().getId(), file.getTime(), zip.readAllBytes()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
 
-        return multipartBuilder.build();
+        return responseFileDTOS;
     }
 }

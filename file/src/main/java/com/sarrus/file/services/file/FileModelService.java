@@ -1,18 +1,17 @@
 package com.sarrus.file.services.file;
 
 import com.sarrus.file.configs.FileStorageConfig;
-import com.sarrus.file.dtos.FileDTO;
+import com.sarrus.file.dtos.RequestFileDTO;
+import com.sarrus.file.dtos.ResponseFileDTO;
 import com.sarrus.file.models.FileModel;
 import com.sarrus.file.repositories.FileRepository;
 import com.sarrus.file.services.playlist.PlaylistService;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 public class FileModelService {
@@ -30,29 +29,32 @@ public class FileModelService {
         this.playlistService = playlistService;
     }
 
-    public void saveAndStore(FileDTO fileDTO) throws IOException {
-        for(MultipartFile file: fileDTO.files()) {
-            FileModel fileModel = fileModelLogic.populateFileModel(file, fileDTO.user(), fileDTO.playlist());
-            fileModel.setFilePath(fileStorageLocation.resolve(file.getOriginalFilename())
-                    .toString()
-                    .replaceAll("\\.(png|jpg|mp4)", ".zip"));
+    public void saveAndStore(RequestFileDTO requestFileDTO) {
+        List<FileModel> fileModels = fileModelLogic.populateFileModel(requestFileDTO);
+        fileModels.forEach(file -> {
+           file.setFilePath(fileStorageLocation.resolve(file.getName())
+                   .toString()
+                   .replaceAll("\\.(png|jpg|mp4|jpeg)", ".zip"));
 
-            fileModelLogic.zipAndStoreFile(fileModel);
-            if (fileModel.getPlaylist().getId() == null) {
-                //Todo alinhar como deve ser gerado o nome da playlist
-                fileModel.getPlaylist().setName("Playlist "+fileModel.getUser().getName());
-                fileModel.getPlaylist().setUserId(fileModel.getUser());
+            try {
+                fileModelLogic.zipAndStoreFile(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            playlistService.save(fileModel.getPlaylist());
-            this.save(fileModel);
-        }
+            if (file.getPlaylist() == null) {
+                file.getPlaylist().setName("Playlist " + file.getUser().getName());
+                file.getPlaylist().setUserId(file.getUser());
+            }
+            playlistService.save(file.getPlaylist());
+            this.saveFile(file);
+        });
     }
 
-    public MultiValueMap<String, HttpEntity<?>> unzipFiles(Integer userId, Integer fileId) {
-        return fileModelLogic.unzipFiles(userId, fileId);
+    public List<ResponseFileDTO> getFiles(RequestFileDTO requestFileDTO) {
+        return fileModelLogic.unzipAndPrepResponse(requestFileDTO.user(), requestFileDTO.playlist());
     }
 
-    private void save(FileModel fileModel) {
+    private void saveFile(FileModel fileModel) {
         fileRepository.save(fileModel);
     }
 }

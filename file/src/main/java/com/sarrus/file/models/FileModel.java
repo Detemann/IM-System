@@ -20,6 +20,7 @@ public class FileModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    private Integer time;
     private String filePath;
     private String fileType;
     @ManyToOne
@@ -37,8 +38,10 @@ public class FileModel {
         this.filePath = filePath.resolve(file.getOriginalFilename()).toString().replaceAll("\\.(png|jpg|mp4)", ".zip");
     }
 
-    public FileModel(MultipartFile file) {
+    public FileModel(MultipartFile file, Integer time, User user, Playlist playlist) {
         this.name = file.getOriginalFilename();
+        this.user = user;
+        this.playlist = playlist;
         this.fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
         this.multipartFile = file;
     }
