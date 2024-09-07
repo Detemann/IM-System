@@ -9,7 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ResponseFileDTO {
         Integer fileId;
-        String fileName;
         Integer playlistId;
         Integer time;
         FileDTO file;
