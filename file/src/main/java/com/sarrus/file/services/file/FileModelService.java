@@ -57,4 +57,9 @@ public class FileModelService {
     private void saveFile(FileModel fileModel) {
         fileRepository.save(fileModel);
     }
+
+    public void deleteFile(Integer fileId) {
+        fileRepository.deleteById(fileId);
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.sarrus.file.dtos;
+package com.sarrus.api_files.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

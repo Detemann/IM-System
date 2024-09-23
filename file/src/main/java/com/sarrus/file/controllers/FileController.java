@@ -39,4 +39,11 @@ public class FileController {
                 return ResponseEntity.notFound().build();
             }
     }
+
+    @DeleteMapping("/{fileId}")
+    public ResponseEntity deleteFile(@PathVariable Integer fileId) {
+        fileModelService.deleteFile(fileId);
+
+        return ResponseEntity.ok().build();
+    }
 }
