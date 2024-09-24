@@ -10,7 +10,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -69,17 +68,12 @@ public class FileService {
                 .block();
     }
 
-    public boolean deleteFile(Integer fileId) {
-        try {
-            webClient.delete()
-                    .uri("/files/{fileId}", fileId)
-                    .retrieve()
-                    .toBodilessEntity()
-                    .block();
-            return true;
-        } catch (RetrieveException e) {
-            return false;
-        }
+    public ResponseEntity deleteFile(Integer fileId) {
+        return webClient.delete()
+                .uri("/files/{fileId}", fileId)
+                .retrieve()
+                .bodyToMono(ResponseEntity.class)
+                .block();
     }
 
 }

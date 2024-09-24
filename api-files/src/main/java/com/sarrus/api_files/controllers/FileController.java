@@ -48,11 +48,6 @@ public class FileController {
 
     @DeleteMapping("/{fileId}")
     public ResponseEntity<String> deleteFile(@PathVariable("fileId") Integer fileId) {
-        boolean isDeleted = fileService.deleteFile(fileId);
-        if (isDeleted) {
-            return ResponseEntity.ok().body("Arquivo deletado com sucesso!");
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return fileService.deleteFile(fileId);
     }
 }

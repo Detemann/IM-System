@@ -6,18 +6,12 @@ import com.sarrus.file.dtos.ResponseFileDTO;
 import com.sarrus.file.models.FileModel;
 import com.sarrus.file.repositories.FileRepository;
 import com.sarrus.file.services.playlist.PlaylistService;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -77,14 +71,10 @@ public class FileModelService {
 
     public boolean deleteFileById(Integer fileId) {
         try {
-            webClient.delete()
-                    .uri("/file/{fileId}", fileId)
-                    .retrieve()
-                    .toBodilessEntity()
-                    .block();
+            this.deleteFile(fileId);
             return true;
         } catch (Exception e) {
-            return false;
+            throw new RuntimeException(e);
         }
     }
 
@@ -93,8 +83,6 @@ public class FileModelService {
         fileRepository.save(fileModel);
     }
 
-    public void deleteFile(Integer fileId) {
-        fileRepository.deleteById(fileId);
-    }
+    private void deleteFile(Integer fileId) { fileRepository.deleteById(fileId); }
 
 }
