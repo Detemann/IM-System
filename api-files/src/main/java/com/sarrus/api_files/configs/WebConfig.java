@@ -24,7 +24,6 @@ public class WebConfig {
 
     private static ExchangeFilterFunction errorHandlingFilter() {
         return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
-            System.out.println(clientResponse.statusCode());
             if (clientResponse.statusCode().isError()) {
                 return clientResponse.bodyToMono(ErrorDTO.class)
                         .flatMap(errorBody -> Mono.error(new RetrieveException(clientResponse.statusCode(), errorBody.getMessage())));

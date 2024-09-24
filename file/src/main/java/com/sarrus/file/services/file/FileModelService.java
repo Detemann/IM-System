@@ -7,6 +7,7 @@ import com.sarrus.file.models.FileModel;
 import com.sarrus.file.repositories.FileRepository;
 import com.sarrus.file.services.playlist.PlaylistService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -20,13 +21,18 @@ public class FileModelService {
     private FileModelLogic fileModelLogic;
     private PlaylistService playlistService;
     private final Path fileStorageLocation;
-
-    public FileModelService(FileStorageConfig fileStorageProperties, FileModelLogic fileModelLogic, FileRepository fileRepository, PlaylistService playlistService) {
+    private final WebClient webClient;
+    public FileModelService(FileStorageConfig fileStorageProperties,
+                            FileModelLogic fileModelLogic,
+                            FileRepository fileRepository,
+                            PlaylistService playlistService,
+                            WebClient.Builder webClientBuilder) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getRoot())
                 .toAbsolutePath().normalize();
         this.fileModelLogic = fileModelLogic;
         this.fileRepository = fileRepository;
         this.playlistService = playlistService;
+        this.webClient = webClientBuilder.baseUrl("bota a url da api q eu n to lembrando nessa pora").build();
     }
 
     public void saveAndStore(RequestFileDTO requestFileDTO) {
@@ -54,7 +60,29 @@ public class FileModelService {
         return fileModelLogic.unzipAndPrepResponse(requestFileDTO.user(), requestFileDTO.playlist());
     }
 
+    public List<ResponseFileDTO> postFilesById(Long userId, Long playlistId) {
+        return webClient.post()
+                .uri("/file/{userId}/{playlistId}", userId, playlistId)
+                .retrieve()
+                .bodyToFlux(ResponseFileDTO.class)
+                .collectList()
+                .block();
+    }
+
+    public boolean deleteFileById(Integer fileId) {
+        try {
+            this.deleteFile(fileId);
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     private void saveFile(FileModel fileModel) {
         fileRepository.save(fileModel);
     }
+
+    private void deleteFile(Integer fileId) { fileRepository.deleteById(fileId); }
+
 }

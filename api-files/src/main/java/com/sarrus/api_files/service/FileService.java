@@ -1,6 +1,8 @@
 package com.sarrus.api_files.service;
 
-import com.sarrus.api_files.dto.FileDTO;
+import com.sarrus.api_files.dto.RequestFileDTO;
+import com.sarrus.api_files.dto.ResponseFileDTO;
+import com.sarrus.api_files.exceptions.RetrieveException;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class FileService {
@@ -24,13 +27,13 @@ public class FileService {
 *
 * Mudar uri quando o controller especifico de file por criado
 * */
-    public ResponseEntity send(FileDTO fileDTO) throws IOException {
+    public ResponseEntity send(RequestFileDTO requestFileDTO) throws IOException {
 
         MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
-        bodyMap.add("user", fileDTO.user());
-        bodyMap.add("playlist", fileDTO.playlist());
-        bodyMap.add("time", fileDTO.time());
-        Arrays.stream(fileDTO.files()).forEach(file -> {
+        bodyMap.add("user", requestFileDTO.user());
+        bodyMap.add("playlist", requestFileDTO.playlist());
+        bodyMap.add("time", requestFileDTO.time());
+        Arrays.stream(requestFileDTO.files()).forEach(file -> {
             try {
                 bodyMap.add("file", new ByteArrayResource(file.getBytes()));
             } catch (IOException e) {
@@ -40,10 +43,37 @@ public class FileService {
         });
 
         return webClient.post()
-                .uri("/test")
+                .uri("/file")
                 .body(BodyInserters.fromMultipartData(bodyMap))
                 .retrieve()
                 .toEntity(ResponseEntity.class)
                 .block();
     }
+
+    public ResponseEntity getFile(Long fileId) {
+        return webClient.get()
+                .uri("/files/{fileId}", fileId)
+                .retrieve()
+                .bodyToMono(ResponseEntity.class)
+                .block();
+    }
+
+    public List<ResponseFileDTO> getFilesByPlaylistId(RequestFileDTO requestFileDTO) {
+        return webClient.post()
+                .uri("/file/download")
+                .body(BodyInserters.fromValue(requestFileDTO))
+                .retrieve()
+                .bodyToFlux(ResponseFileDTO.class)
+                .collectList()
+                .block();
+    }
+
+    public ResponseEntity deleteFile(Integer fileId) {
+        return webClient.delete()
+                .uri("/files/{fileId}", fileId)
+                .retrieve()
+                .bodyToMono(ResponseEntity.class)
+                .block();
+    }
+
 }

@@ -1,14 +1,20 @@
 package com.sarrus.api_files.dto;
 
-import jakarta.validation.constraints.NotNull;
-import org.springframework.web.multipart.MultipartFile;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record FileDTO(
-        Integer user,
-        @NotNull
-        Integer playlist,
-        @NotNull
-        Integer time,
-        @NotNull//In seconds
-        MultipartFile[] files) {
+import java.util.Base64;
+
+@Getter
+@Setter
+@NoArgsConstructor
+public class FileDTO {
+    String fileName;
+    String fileContent;
+
+    public FileDTO(String fileName, byte[] fileContent) {
+        this.fileName = fileName;
+        this.fileContent = Base64.getEncoder().encodeToString(fileContent);
+    }
 }
