@@ -6,11 +6,18 @@ import com.sarrus.file.dtos.ResponseFileDTO;
 import com.sarrus.file.models.FileModel;
 import com.sarrus.file.repositories.FileRepository;
 import com.sarrus.file.services.playlist.PlaylistService;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -20,13 +27,18 @@ public class FileModelService {
     private FileModelLogic fileModelLogic;
     private PlaylistService playlistService;
     private final Path fileStorageLocation;
-
-    public FileModelService(FileStorageConfig fileStorageProperties, FileModelLogic fileModelLogic, FileRepository fileRepository, PlaylistService playlistService) {
+    private final WebClient webClient;
+    public FileModelService(FileStorageConfig fileStorageProperties,
+                            FileModelLogic fileModelLogic,
+                            FileRepository fileRepository,
+                            PlaylistService playlistService,
+                            WebClient.Builder webClientBuilder) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getRoot())
                 .toAbsolutePath().normalize();
         this.fileModelLogic = fileModelLogic;
         this.fileRepository = fileRepository;
         this.playlistService = playlistService;
+        this.webClient = webClientBuilder.baseUrl("bota a url da api q eu n to lembrando nessa pora").build();
     }
 
     public void saveAndStore(RequestFileDTO requestFileDTO) {
@@ -53,6 +65,29 @@ public class FileModelService {
     public List<ResponseFileDTO> getFiles(RequestFileDTO requestFileDTO) {
         return fileModelLogic.unzipAndPrepResponse(requestFileDTO.user(), requestFileDTO.playlist());
     }
+
+    public List<ResponseFileDTO> postFilesById(Long userId, Long playlistId) {
+        return webClient.post()
+                .uri("/file/{userId}/{playlistId}", userId, playlistId)
+                .retrieve()
+                .bodyToFlux(ResponseFileDTO.class)
+                .collectList()
+                .block();
+    }
+
+    public boolean deleteFileById(Integer fileId) {
+        try {
+            webClient.delete()
+                    .uri("/file/{fileId}", fileId)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 
     private void saveFile(FileModel fileModel) {
         fileRepository.save(fileModel);

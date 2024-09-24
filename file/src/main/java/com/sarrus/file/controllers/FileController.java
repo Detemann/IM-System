@@ -40,10 +40,22 @@ public class FileController {
             }
     }
 
-    @DeleteMapping("/{fileId}")
-    public ResponseEntity deleteFile(@PathVariable Integer fileId) {
-        fileModelService.deleteFile(fileId);
+    @PostMapping("/external/{userId}/{playlistId}")
+    public ResponseEntity<List<ResponseFileDTO>> postFilesByUserIdAndPlaylistId(@PathVariable Long userId, @PathVariable Long playlistId) {
+        List<ResponseFileDTO> files = fileModelService.postFilesById(userId, playlistId);
+        if (!files.isEmpty()) {
+            return ResponseEntity.ok().body(files);
+        }
+        return ResponseEntity.notFound().build();
+    }
 
-        return ResponseEntity.ok().build();
+    @DeleteMapping("/{fileId}")
+    public ResponseEntity<String> deleteById(@PathVariable Integer fileId) {
+        boolean isDeleted = fileModelService.deleteFileById(fileId);
+        if (isDeleted) {
+            return ResponseEntity.ok().body("Arquivo deletado com sucesso!");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
