@@ -27,14 +27,16 @@ public class FileController {
         return fileService.send(requestFileDTO);
     }
 
-    /*
-    * Todo
-    *  Fazer endpoint GET que faça a requisição do endpoint do file GET que pegue todos os arquivos vinculados a uma playlist -
-    *  esse deve passar o id do usuário e id da playlist
-    * */
-    //DO HERE
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<ResponseFileDTO>> getAllFiles(@PathVariable Integer userId) {
+        List<ResponseFileDTO> files = fileService.getAllFiles(userId);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
+                .body(files);
+    }
 
-    @GetMapping
+    @PostMapping("/download")
     public ResponseEntity<List<ResponseFileDTO>> getFilesByPlaylistId(@Valid @RequestBody RequestFileDTO requestFileDTO) {
         List<ResponseFileDTO> files = fileService.getFilesByPlaylistId(requestFileDTO);
         if (!files.isEmpty()) {

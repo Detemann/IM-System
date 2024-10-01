@@ -50,11 +50,12 @@ public class FileService {
                 .block();
     }
 
-    public ResponseEntity getFile(Long fileId) {
+    public List<ResponseFileDTO> getAllFiles(Integer userId) {
         return webClient.get()
-                .uri("/files/{fileId}", fileId)
+                .uri("/files/{userId}")
                 .retrieve()
-                .bodyToMono(ResponseEntity.class)
+                .bodyToFlux(ResponseFileDTO.class)
+                .collectList()
                 .block();
     }
 

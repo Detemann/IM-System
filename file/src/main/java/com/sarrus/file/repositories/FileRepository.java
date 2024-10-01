@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface FileRepository extends JpaRepository<FileModel, Integer> {
@@ -14,4 +13,6 @@ public interface FileRepository extends JpaRepository<FileModel, Integer> {
     @Query("SELECT f FROM files f " +
             "WHERE f.playlist.id = ?1 AND f.user.id = ?2")
     List<FileModel> findByPlaylistAndUser(Integer playlistId, Integer userId);
+
+    List<FileModel> getAllFiles(Integer userId);
 }

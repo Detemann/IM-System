@@ -22,6 +22,7 @@ public class FileModelService {
     private PlaylistService playlistService;
     private final Path fileStorageLocation;
     private final WebClient webClient;
+
     public FileModelService(FileStorageConfig fileStorageProperties,
                             FileModelLogic fileModelLogic,
                             FileRepository fileRepository,
@@ -60,15 +61,6 @@ public class FileModelService {
         return fileModelLogic.unzipAndPrepResponse(requestFileDTO.user(), requestFileDTO.playlist());
     }
 
-    public List<ResponseFileDTO> postFilesById(Long userId, Long playlistId) {
-        return webClient.post()
-                .uri("/file/{userId}/{playlistId}", userId, playlistId)
-                .retrieve()
-                .bodyToFlux(ResponseFileDTO.class)
-                .collectList()
-                .block();
-    }
-
     public boolean deleteFileById(Integer fileId) {
         try {
             this.deleteFile(fileId);
@@ -76,6 +68,10 @@ public class FileModelService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<ResponseFileDTO> getAllFiles(Integer userId) {
+        return fileModelLogic.unzipAndPrepResponse(userId);
     }
 
 
