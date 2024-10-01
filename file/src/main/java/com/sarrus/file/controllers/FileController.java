@@ -21,6 +21,12 @@ public class FileController {
     @Autowired
     private FileModelService fileModelService;
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<ResponseFileDTO>> getAllFiles(@PathVariable Integer userId) {
+        List<ResponseFileDTO> files = fileModelService.getAllFiles(userId);
+        return new ResponseEntity<>(files, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<Object> saveFiles(@Valid RequestFileDTO requestFileDTO) {
         fileModelService.saveAndStore(requestFileDTO);
@@ -38,15 +44,6 @@ public class FileController {
             } else {
                 return ResponseEntity.notFound().build();
             }
-    }
-
-    @PostMapping("/external/{userId}/{playlistId}")
-    public ResponseEntity<List<ResponseFileDTO>> postFilesByUserIdAndPlaylistId(@PathVariable Long userId, @PathVariable Long playlistId) {
-        List<ResponseFileDTO> files = fileModelService.postFilesById(userId, playlistId);
-        if (!files.isEmpty()) {
-            return ResponseEntity.ok().body(files);
-        }
-        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{fileId}")

@@ -67,10 +67,19 @@ public class FileModelLogic {
         return fileModels;
     }
 
+    public List<ResponseFileDTO> unzipAndPrepResponse(Integer userId) {
+        return unzipAndPrepResponse(userId, null);
+    }
+
     public List<ResponseFileDTO> unzipAndPrepResponse(Integer userId, Integer playlistId) {
-        List<FileModel> files = fileRepository.findByPlaylistAndUser(playlistId, userId);
+        List<FileModel> files;
+        if(playlistId != null) {
+            files = fileRepository.findByPlaylistAndUser(playlistId, userId);
+        } else {
+            files = fileRepository.getAllFiles(userId);
+        }
         if (files.isEmpty()) {
-            throw new DataNotFoundException(userId, "File not found!");
+            throw new DataNotFoundException(userId, "Files not found!");
         }
 
         List<ResponseFileDTO> responseFileDTOS = new ArrayList<>();
