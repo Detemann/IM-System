@@ -18,8 +18,11 @@ import java.util.List;
 @RequestMapping("/file")
 public class FileController {
 
-    @Autowired
-    private FileModelService fileModelService;
+    private final FileModelService fileModelService;
+
+    public FileController(FileModelService fileModelService) {
+        this.fileModelService = fileModelService;
+    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<ResponseFileDTO>> getAllFiles(@PathVariable Integer userId) {

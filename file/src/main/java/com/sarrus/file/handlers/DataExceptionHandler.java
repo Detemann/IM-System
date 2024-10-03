@@ -13,9 +13,9 @@ public class DataExceptionHandler {
 
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler
+    @ExceptionHandler(DataNotFoundException.class)
     public ErrorDTO exceptionHandler(DataNotFoundException ex) {
         return new ErrorDTO(ex.getMessage(),
-                ex.getUserId().toString());
+                ex.getUserId() == null ? ex.getFileId().toString(): ex.getUserId().toString());
     }
 }

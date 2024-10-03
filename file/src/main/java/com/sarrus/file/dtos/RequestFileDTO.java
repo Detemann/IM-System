@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 public record RequestFileDTO(
         @NotNull
         Integer user,
-        @NotNull
         Integer playlist,
         Integer time,
         MultipartFile[] files) {

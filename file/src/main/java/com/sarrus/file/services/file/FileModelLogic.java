@@ -53,16 +53,23 @@ public class FileModelLogic {
     }
 
     public List<FileModel> populateFileModel(RequestFileDTO requestFileDTO) {
-        Optional<User> user = Optional.ofNullable(userRepository.findById(requestFileDTO.user())
-                .orElseThrow(() -> new DataNotFoundException(requestFileDTO.user(), "User not found!")));
+        List<FileModel> fileModels;
+        Optional<User> user = userRepository.findById(requestFileDTO.user());
+        if(user.isEmpty()) throw new DataNotFoundException(requestFileDTO.user(), "Usuário não encontrado");
 
-        Optional<Playlist> playlist = Optional.of(playlistRepository.findByUserIdAndId(requestFileDTO.user(), requestFileDTO.playlist())
-                .orElse(new Playlist()));
+        if(requestFileDTO.playlist() != null) {
+            Optional<Playlist> playlist = Optional.of(playlistRepository.findByUserIdAndId(requestFileDTO.user(), requestFileDTO.playlist()).orElse(new Playlist()));
 
-        List<FileModel> fileModels = new ArrayList<>();
-        Arrays.stream(requestFileDTO.files()).forEach(file -> {
-            fileModels.add(new FileModel(file, requestFileDTO.time(), user.get(), playlist.get()));
-        });
+            fileModels = new ArrayList<>();
+            Arrays.stream(requestFileDTO.files()).forEach(file -> {
+                fileModels.add(new FileModel(file, requestFileDTO.time().intValue(), user.get(), playlist.get()));
+            });
+        } else {
+            fileModels = new ArrayList<>();
+            Arrays.stream(requestFileDTO.files()).forEach(file -> {
+                fileModels.add(new FileModel(file, requestFileDTO.time().intValue(), user.get()));
+            });
+        }
 
         return fileModels;
     }
