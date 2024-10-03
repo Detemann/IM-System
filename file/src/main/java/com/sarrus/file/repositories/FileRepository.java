@@ -14,5 +14,7 @@ public interface FileRepository extends JpaRepository<FileModel, Integer> {
             "WHERE f.playlist.id = ?1 AND f.user.id = ?2")
     List<FileModel> findByPlaylistAndUser(Integer playlistId, Integer userId);
 
+    @Query("SELECT f FROM files f " +
+            "WHERE f.user.id = ?1")
     List<FileModel> getAllFiles(Integer userId);
 }
