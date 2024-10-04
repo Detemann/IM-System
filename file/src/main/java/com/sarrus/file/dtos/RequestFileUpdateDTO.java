@@ -1,13 +1,14 @@
 package com.sarrus.file.dtos;
 
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 
-public record RequestFileDTO(
+import java.util.List;
+
+public record RequestFileUpdateDTO(
         @NotNull
         Integer user,
         Integer playlist,
         Integer time,
-        MultipartFile[] files) {
+        FileDTO file) {
 }

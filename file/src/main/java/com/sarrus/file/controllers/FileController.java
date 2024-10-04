@@ -1,6 +1,7 @@
 package com.sarrus.file.controllers;
 
 import com.sarrus.file.dtos.RequestFileDTO;
+import com.sarrus.file.dtos.RequestFileUpdateDTO;
 import com.sarrus.file.dtos.ResponseFileDTO;
 import com.sarrus.file.services.file.FileModelService;
 import jakarta.validation.Valid;
@@ -18,13 +19,22 @@ import java.util.List;
 @RequestMapping("/file")
 public class FileController {
 
-    @Autowired
-    private FileModelService fileModelService;
+    private final FileModelService fileModelService;
+
+    public FileController(FileModelService fileModelService) {
+        this.fileModelService = fileModelService;
+    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<ResponseFileDTO>> getAllFiles(@PathVariable Integer userId) {
         List<ResponseFileDTO> files = fileModelService.getAllFiles(userId);
         return new ResponseEntity<>(files, HttpStatus.OK);
+    }
+
+    @PutMapping
+    public ResponseEntity updateFile(@RequestBody @Valid RequestFileUpdateDTO requestFileUpdateDTO) {
+        fileModelService.updateFileById(requestFileUpdateDTO);
+        return ResponseEntity.ok("Arquivo atualizado");
     }
 
     @PostMapping
