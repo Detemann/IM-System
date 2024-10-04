@@ -1,5 +1,6 @@
 package com.sarrus.file.models;
 
+import com.sarrus.file.dtos.FileDTO;
 import com.sarrus.file.exceptions.DataNotFoundException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -55,5 +56,15 @@ public class FileModel {
         this.time = time;
         this.fileType = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
         this.multipartFile = file;
+    }
+
+    public FileModel(FileDTO fileDTO, User user, Playlist playlist) {
+        this.id = fileDTO.getFileId();
+        this.name = fileDTO.getFileName();
+        this.fileType = fileDTO.getFileType();
+        this.filePath = fileDTO.getFilePath();
+        this.time = fileDTO.getTime();
+        this.playlist = playlist;
+        this.user = user;
     }
 }

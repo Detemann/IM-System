@@ -26,4 +26,11 @@ public class FileModelLogicExceptionHandler {
     public ErrorDTO fileDeleteErrorHandler(FileDeleteErrorException ex) {
         return new ErrorDTO(ex.getMessage(), ex.getDetail());
     }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(RuntimeException.class)
+    public ErrorDTO fileDeleteErrorHandler(RuntimeException ex) {
+        return new ErrorDTO(ex.getMessage(), "Internal Server Error");
+    }
 }
