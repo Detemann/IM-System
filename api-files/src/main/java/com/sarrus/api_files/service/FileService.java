@@ -1,8 +1,8 @@
 package com.sarrus.api_files.service;
 
 import com.sarrus.api_files.dto.RequestFileDTO;
+import com.sarrus.api_files.dto.RequestFileUpdateDTO;
 import com.sarrus.api_files.dto.ResponseFileDTO;
-import com.sarrus.api_files.exceptions.RetrieveException;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class FileService {
 *
 * Mudar uri quando o controller especifico de file por criado
 * */
-    public ResponseEntity send(RequestFileDTO requestFileDTO) throws IOException {
+    public ResponseEntity<String> send(RequestFileDTO requestFileDTO) {
 
         MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
         bodyMap.add("user", requestFileDTO.user());
@@ -43,16 +43,16 @@ public class FileService {
         });
 
         return webClient.post()
-                .uri("/file")
-                .body(BodyInserters.fromMultipartData(bodyMap))
-                .retrieve()
-                .toEntity(ResponseEntity.class)
-                .block();
+            .uri("/file")
+            .body(BodyInserters.fromMultipartData(bodyMap))
+            .retrieve()
+            .toEntity(String.class)
+            .block();
     }
 
     public List<ResponseFileDTO> getAllFiles(Integer userId) {
         return webClient.get()
-                .uri("/files/{userId}")
+                .uri("/files/{userId}", userId)
                 .retrieve()
                 .bodyToFlux(ResponseFileDTO.class)
                 .collectList()
@@ -69,12 +69,20 @@ public class FileService {
                 .block();
     }
 
-    public ResponseEntity deleteFile(Integer fileId) {
+    public ResponseEntity<String> deleteFile(Integer fileId) {
         return webClient.delete()
                 .uri("/files/{fileId}", fileId)
                 .retrieve()
-                .bodyToMono(ResponseEntity.class)
+                .toEntity(String.class)
                 .block();
     }
 
+    public ResponseEntity<String> updateFile(RequestFileUpdateDTO requestFileDTO) {
+        return webClient.put()
+                .uri("/file")
+                .body(BodyInserters.fromValue(requestFileDTO))
+                .retrieve()
+                .toEntity(String.class)
+                .block();
+    }
 }
