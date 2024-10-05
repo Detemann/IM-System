@@ -32,7 +32,7 @@ public class FileController {
     }
 
     @PutMapping
-    public ResponseEntity updateFile(@RequestBody @Valid RequestFileUpdateDTO requestFileUpdateDTO) {
+    public ResponseEntity<String> updateFile(@RequestBody @Valid RequestFileUpdateDTO requestFileUpdateDTO) {
         fileModelService.updateFileById(requestFileUpdateDTO);
         return ResponseEntity.ok("Arquivo atualizado");
     }
