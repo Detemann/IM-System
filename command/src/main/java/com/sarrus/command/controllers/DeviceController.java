@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/device")
@@ -17,6 +19,12 @@ public class DeviceController {
     @GetMapping("/{deviceId}")
     public ResponseEntity<DeviceDTO> getDevice(@PathVariable @Valid Integer deviceId) {
         DeviceDTO device = deviceService.getDevice(deviceId);
+        return ResponseEntity.ok().body(device);
+    }
+
+    @GetMapping("/all/{userId}")
+    public ResponseEntity<List<DeviceDTO>> getAllDevice(@PathVariable @Valid Integer userId) {
+        List<DeviceDTO> device = deviceService.getAllDevices(userId);
         return ResponseEntity.ok().body(device);
     }
 
