@@ -32,8 +32,9 @@ public class DeviceController {
         return ResponseEntity.ok().body("Atualizado com sucesso!");
     }
 
-    @DeleteMapping
-    public ResponseEntity<String> deleteDevice(@RequestBody @Valid DeviceDTO device) {
-        return null;
+    @DeleteMapping("/{deviceId}")
+    public ResponseEntity<String> deleteDevice(@PathVariable @Valid Integer deviceId) {
+        deviceService.deleteDevice(deviceId);
+        return ResponseEntity.ok().body("Deletado com sucesso!");
     }
 }

@@ -61,14 +61,27 @@ public class DeviceLogic implements DeviceService {
 
                 device.setPlaylist(playlist);
             }
-
-            device.setName(deviceDTO.getName().isEmpty() ? device.getName() : deviceDTO.getName());
-            device.setAddress(deviceDTO.getAddress().isEmpty() ? device.getAddress() : deviceDTO.getAddress());
+            if(deviceDTO.getName() != null && !deviceDTO.getName().isEmpty()) {
+                device.setName(deviceDTO.getName());
+            }
+            if(deviceDTO.getAddress() != null && !deviceDTO.getAddress().isEmpty()) {
+                device.setAddress(deviceDTO.getAddress());
+            }
 
             deviceRepository.save(device);
         } catch (Exception e) {
             e.printStackTrace();
             throw new DeviceLogicException("[DeviceLogic -> updateDevice] " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void deleteDevice(Integer id) {
+        try {
+            deviceRepository.deleteById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DeviceLogicException("[DeviceLogic -> deleteDevice] " + e.getMessage());
         }
     }
 

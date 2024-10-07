@@ -11,4 +11,6 @@ public interface DeviceService {
     public void insertDevice(DeviceDTO device);
 
     public void updateDevice(DeviceDTO device);
+
+    public void deleteDevice(Integer id);
 }
