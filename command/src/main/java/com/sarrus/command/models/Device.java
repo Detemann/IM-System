@@ -1,5 +1,6 @@
 package com.sarrus.command.models;
 
+import com.sarrus.command.dto.DeviceDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,4 +23,9 @@ public class Device {
     private User user;
     @ManyToOne
     private Playlist playlist;
+
+    public Device(DeviceDTO device) {
+        this.name = device.getName();
+        this.address = device.getAddress();
+    }
 }
