@@ -24,6 +24,6 @@ public class DeviceDTO {
         this.name = deviceDTO.getName();
         this.address = deviceDTO.getAddress();
         this.userId = deviceDTO.getUser().getId();
-        this.playlistId = deviceDTO.getPlaylist().getId();
+        this.playlistId = deviceDTO.getPlaylist() != null ? deviceDTO.getPlaylist().getId() : null;
     }
 }
