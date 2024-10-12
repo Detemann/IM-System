@@ -74,9 +74,9 @@ public class FileModelService {
 
             Path file = Paths.get(fileModel.get().getFilePath());
 
-            if (Files.deleteIfExists(file)) {
-                this.deleteFile(fileId);
-            }
+            Files.delete(file);
+            this.deleteFile(null, fileModel.get());
+
         } catch (Exception e) {
             throw new FileDeleteErrorException(e.getMessage(), "[FileModelService -> deleteFileById] Erro ao excluir o arquivo");
         }
@@ -100,8 +100,12 @@ public class FileModelService {
         fileRepository.save(fileModel);
     }
 
-    private void deleteFile(Integer fileId) {
-        fileRepository.deleteById(fileId);
+    private void deleteFile(Integer fileId, FileModel fileModel) {
+        if(fileModel != null) {
+            fileRepository.delete(fileModel);
+        } else {
+            fileRepository.deleteById(fileId);
+        }
     }
 
 }
