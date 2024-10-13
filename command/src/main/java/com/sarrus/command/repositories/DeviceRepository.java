@@ -19,6 +19,6 @@ public interface DeviceRepository extends JpaRepository<Device, Integer> {
     @Modifying
     @Query("UPDATE Device " +
             "SET playlist = NULL " +
-            "WHERE playlist.id = 1")
+            "WHERE playlist.id = ?1")
     void deleteByPlaylistId(Integer playlistId);
 }
