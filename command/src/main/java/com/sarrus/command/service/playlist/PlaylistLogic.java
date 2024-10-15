@@ -4,6 +4,8 @@ import com.sarrus.command.dto.PlaylistDTO;
 import com.sarrus.command.exceptions.DataNotFoundException;
 import com.sarrus.command.exceptions.PlaylistLogicException;
 import com.sarrus.command.models.Playlist;
+import com.sarrus.command.repositories.DeviceRepository;
+import com.sarrus.command.repositories.FileRepository;
 import com.sarrus.command.repositories.PlaylistRepository;
 import com.sarrus.command.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,10 @@ public class PlaylistLogic implements PlaylistServices {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    private DeviceRepository deviceRepository;
+    @Autowired
+    private FileRepository fileRepository;
 
     @Override
     public PlaylistDTO getPlaylist(Integer id) {
@@ -64,6 +70,8 @@ public class PlaylistLogic implements PlaylistServices {
     @Override
     public void deletePlaylist(Integer id) {
         try {
+            deviceRepository.deleteByPlaylistId(id);
+            fileRepository.deleteByPlaylistId(id);
             playlistRepository.deleteById(id);
         } catch (Exception e) {
             e.printStackTrace();

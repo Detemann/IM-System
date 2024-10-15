@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,6 +24,6 @@ public class DeviceDTO {
         this.name = deviceDTO.getName();
         this.address = deviceDTO.getAddress();
         this.userId = deviceDTO.getUser().getId();
-        this.playlistId = deviceDTO.getPlaylist().getId();
+        this.playlistId = deviceDTO.getPlaylist() != null ? deviceDTO.getPlaylist().getId() : null;
     }
 }

@@ -97,7 +97,7 @@ public class FileModelLogic {
                 ZipInputStream zip = new ZipInputStream(zipFile);
                 zip.getNextEntry();
 
-                responseFileDTOS.add(new ResponseFileDTO(file.getId(), file.getName(), file.getPlaylist().getId(), file.getTime(), zip.readAllBytes()));
+                responseFileDTOS.add(new ResponseFileDTO(file.getId(), file.getName(), file.getPlaylist() != null ? file.getPlaylist().getId():null, file.getTime(), zip.readAllBytes()));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 @Component
 public class DeviceLogic implements DeviceService {
 
@@ -30,6 +32,15 @@ public class DeviceLogic implements DeviceService {
         Device device = deviceRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Dispositivo não encontrado", id));
         return new DeviceDTO(device);
+    }
+
+    @Override
+    public List<DeviceDTO> getAllDevices(Integer id) {
+        try {
+            return deviceRepository.allDevicesByUserId(id).stream().map(DeviceDTO::new).toList();
+        } catch (Exception e) {
+            throw new DeviceLogicException("[DeviceLogic -> getAllDevices] "+ e.getMessage());
+        }
     }
 
     @Override
