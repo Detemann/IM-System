@@ -16,5 +16,7 @@ public interface DeviceService {
 
     public void updateDevice(DeviceDTO device);
 
+    public void updatePlaylistsInDevices();
+
     public void deleteDevice(Integer id);
 }
