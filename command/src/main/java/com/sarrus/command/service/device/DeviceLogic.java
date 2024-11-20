@@ -101,7 +101,7 @@ public class DeviceLogic implements DeviceService {
                  body.put("playlistId", device.getPlaylist().getId());
 
                  webClient.put()
-                         .uri("http://"+device.getAddress()+"8080")
+                         .uri("http://"+device.getAddress()+"8080/playlist")
                          .bodyValue(body)
                          .retrieve()
                          .toBodilessEntity();
