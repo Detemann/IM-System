@@ -16,6 +16,6 @@ public interface FileRepository extends JpaRepository<FileModel, Integer> {
     @Modifying
     @Query("UPDATE files " +
             "SET playlist = NULL " +
-            "WHERE playlist.id = 1")
+            "WHERE playlist.id = ?1")
     void deleteByPlaylistId(Integer playlistId);
 }

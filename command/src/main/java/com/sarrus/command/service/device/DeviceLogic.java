@@ -13,8 +13,11 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class DeviceLogic implements DeviceService {
@@ -26,6 +29,8 @@ public class DeviceLogic implements DeviceService {
     private UserRepository userRepository;
     @Autowired
     private PlaylistRepository playlistRepository;
+    @Autowired
+    private WebClient webClient;
 
     @Override
     public DeviceDTO getDevice(Integer id) {
@@ -83,6 +88,27 @@ public class DeviceLogic implements DeviceService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new DeviceLogicException("[DeviceLogic -> updateDevice] " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void updatePlaylistsInDevices() {
+        try {
+             List<Device> devices = deviceRepository.findAll();
+
+             for (Device device : devices) {
+                 Map<String, Object> body = new HashMap<>();
+                 body.put("playlistId", device.getPlaylist().getId());
+
+                 webClient.put()
+                         .uri("http://"+device.getAddress()+"8080/playlist")
+                         .bodyValue(body)
+                         .retrieve()
+                         .toBodilessEntity();
+             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DeviceLogicException("[DeviceLogic -> updatePlaylistsInDevices] " + e.getMessage());
         }
     }
 

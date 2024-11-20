@@ -34,6 +34,12 @@ public class DeviceController {
         return ResponseEntity.ok().body("Dispositivo criado com sucesso!");
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<String> updatePlaylistsInDevices() {
+        deviceService.updatePlaylistsInDevices();
+        return ResponseEntity.ok().body("Atualizações disparadas!");
+    }
+
     @PutMapping
     public ResponseEntity<String> updateDevice(@RequestBody @Valid DeviceDTO device) {
         deviceService.updateDevice(device);
